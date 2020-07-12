@@ -1,4 +1,6 @@
 const express = require('express');
+const chokidar = require('chokidar');
+const moveFile = require('move-file');
 const fs = require('fs');
 const app = express();
 
@@ -42,10 +44,26 @@ app.post('/nuevaorden', function (req, res) {
 
 
 (async function () {
-  let new_pool;
   try {
     app.listen(3500);
     console.log("Conected and Listening");
+    
+    var watcher = chokidar.watch('C:/Users/santy/Desktop', {ignored: /^\./, persistent: true, ignoreInitial: true});
+    watcher
+      .on('add', function(path) {console.log('File', path, 'has been added');})
+      .on('change', function(path) {console.log('File', path, 'has been changed');})
+      .on('unlink', function(path) {console.log('File', path, 'has been removed');})
+      .on('error', function(error) {console.error('Error happened', error);});
+    /*moveFile('C:/Users/santy/Desktop/README.md', 'C:/Users/santy/Desktop/fotosd/README.md');
+      console.log('The file has been moved');*/
+    /*var oldPath = 'C:/Users/santy/Desktop/README.md';
+    var newPath = 'C:/Users/santy/Desktop/fotosd/README.md';
+    
+    fs.rename(oldPath, newPath, function (err) {
+      if (err) throw err
+      console.log('Successfully renamed - AKA moved!');
+    });*/
+    
   } catch (err) {
     console.error(err.message);
   }
