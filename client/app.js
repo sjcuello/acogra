@@ -1,8 +1,30 @@
 const express = require('express');
 const chokidar = require('chokidar');
-const moveFile = require('move-file');
+const path = require('path'); 
 const fs = require('fs');
 const app = express();
+
+const URL_BASE = 'C:/Users/santy/Desktop/acogra/client/';
+
+const options = {ignored: /^\./, 
+                 persistent: true, 
+                 ignoreInitial: true};
+
+let watcherPendiente = chokidar.watch(`${URL_BASE}PENDIENTE`, options);
+
+let watcherProcesado = chokidar.watch(`${URL_BASE}PROCESADO`, options);
+
+let watcherRespuesta = chokidar.watch(`${URL_BASE}RESPUESTA`, options);
+
+const reportaPendiente = (file) =>{
+  return;
+}
+const reportaProcesado = (file) =>{
+  return;
+}
+const reportaRespuesta = (file) =>{
+  return;
+}
 
 /**
  * {
@@ -48,21 +70,12 @@ app.post('/nuevaorden', function (req, res) {
     app.listen(3500);
     console.log("Conected and Listening");
     
-    var watcher = chokidar.watch('C:/Users/santy/Desktop', {ignored: /^\./, persistent: true, ignoreInitial: true});
-    watcher
-      .on('add', function(path) {console.log('File', path, 'has been added');})
-      .on('change', function(path) {console.log('File', path, 'has been changed');})
-      .on('unlink', function(path) {console.log('File', path, 'has been removed');})
-      .on('error', function(error) {console.error('Error happened', error);});
-    /*moveFile('C:/Users/santy/Desktop/README.md', 'C:/Users/santy/Desktop/fotosd/README.md');
-      console.log('The file has been moved');*/
-    /*var oldPath = 'C:/Users/santy/Desktop/README.md';
-    var newPath = 'C:/Users/santy/Desktop/fotosd/README.md';
-    
-    fs.rename(oldPath, newPath, function (err) {
-      if (err) throw err
-      console.log('Successfully renamed - AKA moved!');
-    });*/
+    watcherPendiente.on('add', function(pathFile) {reportaPendiente(path.parse(pathFile).name)})
+                    .on('error', function(error) {console.error('Error happened', error);});
+    watcherProcesado.on('add', function(pathFile) {reportaProcesado(path.parse(pathFile).name)})
+                    .on('error', function(error) {console.error('Error happened', error);});
+    watcherRespuesta.on('add', function(pathFile) {reportaRespuesta(path.parse(pathFile).name)})
+                    .on('error', function(error) {console.error('Error happened', error);});
     
   } catch (err) {
     console.error(err.message);
