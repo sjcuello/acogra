@@ -25,8 +25,6 @@ const reportaEstado = async (file, state) => {
   let data = { file: file,
                state: state };
 
-  //console.log('data: ',data);
-
   let options = { method: 'POST', 
                   body: JSON.stringify(data), 
                   headers: {
@@ -68,18 +66,22 @@ const reportaRespuesta = async (pathFile, state) => {
     .catch(error => console.error('Error:', error));
 }
 
-/**
- * {
-    "parametro1": 1,
-    "parametro2": 22,
-    "parametro3": 333,
-    "parametro4": 4444,
-    "parametro5": 55555
-    }
- */
+// HashMap de espacios por columna
+const map = {
+  'orden_de_trabajo': 11,
+  'fecha': 8,
+  'producto': 10,
+  'ph': 4,
+  'conductividad': 8,
+  'cantidad': 10,
+  'planta': 10,
+  'fecha_inicio': 12,
+  'fecha_fin': 12,
+  'relleno': 13
+  }
 
 const retornaColumna = (col) => {
-  const ancho = 6; // Ancho de las columnas 
+  const ancho = map[col] ; // Ancho de las columnas 
   return String(col).padStart(ancho);
 }
 
@@ -94,10 +96,12 @@ app.post('/nuevaorden', function (req, res) {
 
   const { body } = req;
 
-  let columna = `${retornaColumna(body.parametro1)}${retornaColumna(body.parametro2)}`
-  columna += `${retornaColumna(body.parametro3)}${retornaColumna(body.parametro4)}`
-  columna += `${retornaColumna(body.parametro5)}`
-
+  let columna = `${retornaColumna(body.orden_de_trabajo)}${retornaColumna(body.fecha)}`
+  columna += `${retornaColumna(body.producto)}${retornaColumna(body.ph)}`
+  columna += `${retornaColumna(body.conductividad)}${retornaColumna(body.cantidad)}`
+  columna += `${retornaColumna(body.planta)}${retornaColumna(body.fecha_inicio)}`
+  columna += `${retornaColumna(body.fecha_fin)}${retornaColumna(body.relleno)}`
+  
   fs.writeFile('ejemplo.txt', columna, function (err) {
     if (err) throw err;
     console.log('Saved!');

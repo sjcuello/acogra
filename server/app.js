@@ -21,7 +21,6 @@ app.post('/registrarespuesta', function (req, res) {
 });
 
 (async function () {
-  let new_pool;
   try {
     app.listen(3600);
     console.log("Conected and Listening");
