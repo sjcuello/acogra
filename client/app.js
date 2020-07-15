@@ -3,6 +3,8 @@ const chokidar = require('chokidar');
 const fetch = require("node-fetch");
 const path = require('path');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
+const {config} = require('./config');
 const app = express();
 
 const URL_BASE = 'C:/Users/santi/Desktop/acogra/client/';
@@ -68,7 +70,7 @@ const reportaRespuesta = async (pathFile, state) => {
 
 // HashMap de espacios por columna
 const map = {
-  'orden_de_trabajo': 11,
+  'orden_de_trabajo':  11,
   'fecha': 8,
   'producto': 10,
   'ph': 4,
