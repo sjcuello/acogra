@@ -36,7 +36,6 @@ const reportaEstado = async (file, state) => {
 
   return await fetch(`${URL}cambioestado`, options)
     .then(res => {
-      //console.log('res.json(): ',res);
       return;
     })
     .catch(error => console.error('Error:', error));
@@ -50,8 +49,6 @@ const reportaRespuesta = async (pathFile, state) => {
     content: fs.readFileSync(pathFile, 'utf8')
   };
 
-  //console.log('data: ',data);
-
   let options = {
     method: 'POST',
     body: JSON.stringify(data),
@@ -62,29 +59,32 @@ const reportaRespuesta = async (pathFile, state) => {
 
   return await fetch(`${URL}registrarespuesta`, options)
     .then(res => {
-      //console.log('res.json(): ',res);
       return;
     })
     .catch(error => console.error('Error:', error));
 }
 
-// HashMap de espacios por columna
+/* HashMap de espacios por columna
+  * con el relleno correspondiente
+*/
 const map = {
-  'orden_de_trabajo':  11,
-  'fecha': 8,
-  'producto': 10,
-  'ph': 4,
-  'conductividad': 8,
-  'cantidad': 10,
-  'planta': 10,
-  'fecha_inicio': 12,
-  'fecha_fin': 12,
-  'relleno': 13
-  }
+  'orden_de_trabajo': [11, '0'],
+  'fecha': [8, '0'],
+  'producto': [10, ' '],
+  'ph': [4, ' '],
+  'conductividad': [8, ' '],
+  'cantidad': [10, '0'],
+  'planta': [10, ' '],
+  'fecha_inicio': [12, '0'],
+  'fecha_fin': [12, '0'],
+  'relleno': [13, ' ']
+}
 
-const retornaColumna = (col) => {
-  const ancho = map[col] ; // Ancho de las columnas 
-  return String(col).padStart(ancho);
+const retornaColumna = (key, val) => {
+  const ancho = map[key][0]; // Ancho de columna 
+  const relleno = map[key][1]; // Caracter de relleno 
+  return String(val).padStart(ancho, relleno);
+
 }
 
 /**
@@ -95,18 +95,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.post('/nuevaorden', function (req, res) {
-
+  
   const { body } = req;
 
-  let columna = `${retornaColumna(body.orden_de_trabajo)}${retornaColumna(body.fecha)}`
-  columna += `${retornaColumna(body.producto)}${retornaColumna(body.ph)}`
-  columna += `${retornaColumna(body.conductividad)}${retornaColumna(body.cantidad)}`
-  columna += `${retornaColumna(body.planta)}${retornaColumna(body.fecha_inicio)}`
-  columna += `${retornaColumna(body.fecha_fin)}${retornaColumna(body.relleno)}`
-  
-  fs.writeFile('ejemplo.txt', columna, function (err) {
-    if (err) throw err;
-    console.log('Saved!');
+
+  jwt.verify(body.access_token, config.authJwtSecretServer, function(err, decoded) {
+
+    const keys = Object.keys(decoded);
+
+    let columna = `${retornaColumna(keys[1],decoded.orden_de_trabajo)}${retornaColumna(keys[2],decoded.fecha)}`
+    columna += `${retornaColumna(keys[3],decoded.producto)}${retornaColumna(keys[4],decoded.ph)}`
+    columna += `${retornaColumna(keys[5],decoded.conductividad)}${retornaColumna(keys[6],decoded.cantidad)}`
+    columna += `${retornaColumna(keys[7],decoded.planta)}${retornaColumna(keys[8],decoded.fecha_inicio)}`
+    columna += `${retornaColumna(keys[9],decoded.fecha_fin)}${retornaColumna(keys[10],decoded.relleno)}`
+    
+    fs.writeFile(`${URL_BASE}PENDIENTE/IOT${decoded.sub}.txt`, columna, function (err) {
+      if (err) throw err;
+      console.log('Saved!');
+    });
   });
 
   return res.end();
