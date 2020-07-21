@@ -2,12 +2,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const fetch = require("node-fetch");
-const async  = require('express-async-await')
-const {config} = require('./config');
+const async = require('express-async-await')
+const { config } = require('./config');
 const { decode } = require('punycode');
 const app = express();
 
 const URL = 'http://127.0.0.1:3500/';
+
 const URL_APEX = 'http://10.13.17.92:8080/ords/inth1100/produccion/';
 
 /**
@@ -18,19 +19,15 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.post('/cambioestado', function (req, res) {
-  console.log('req: ',req.body);
-  res.send(JSON.stringify({from: 'cambioestado',
-                           state: 'ok'}));
-  return res.end(); 
-});
-
-app.post('/registrarespuesta', async function (req, res) {
-  console.log('req: ',req.body);
+  console.log('req: ', req.body);
 
   const { body } = req;
-  jwt.verify(body.access_token, config.authJwtSecretClient, async function(err, decoded) {  
-    console.log('decoded: ', decoded);
-
+  jwt.verify(body.access_token, config.authJwtSecretClient, async function (err, decoded) {
+    
+    if (err){
+      return res.sendStatus(400);
+    }
+    
     let options = {
       method: 'POST',
       body: JSON.stringify(decoded),
@@ -38,16 +35,43 @@ app.post('/registrarespuesta', async function (req, res) {
         'Content-Type': 'application/json'
       }
     };
-  
+
     await fetch(`${URL_APEX}cambioestado`, options)
       .then(res => {
-        console.log('res: ',res);
+        console.log('res cambioestado: ', res);
         return;
       })
       .catch(error => console.error('Error:', error));
-  });                         
-  
-  res.end(); 
+  });
+
+  res.end();
+});
+
+app.post('/registrarespuesta', async function (req, res) {
+
+  const { body } = req;
+
+  jwt.verify(body.access_token, config.authJwtSecretClient, async function (err, decoded) {
+    if (err){
+      return res.sendStatus(400);
+    }
+    
+    let options = {
+      method: 'POST',
+      body: JSON.stringify(decoded),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+
+    await fetch(`${URL_APEX}registrarespuesta`, options)
+      .then(res => {
+        return;
+      })
+      .catch(error => console.error('Error:', error));
+  });
+
+  res.end();
 });
 
 /**
