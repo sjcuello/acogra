@@ -4,9 +4,11 @@ const jwt = require('jsonwebtoken');
 const fetch = require("node-fetch");
 const async  = require('express-async-await')
 const {config} = require('./config');
+const { decode } = require('punycode');
 const app = express();
 
 const URL = 'http://127.0.0.1:3500/';
+const URL_APEX = 'http://10.13.17.92:8080/ords/inth1100/produccion/';
 
 /**
 *** API
@@ -22,11 +24,30 @@ app.post('/cambioestado', function (req, res) {
   return res.end(); 
 });
 
-app.post('/registrarespuesta', function (req, res) {
+app.post('/registrarespuesta', async function (req, res) {
   console.log('req: ',req.body);
-  res.send(JSON.stringify({from: 'registrarespuesta',
-                           state: 'ok'}));
-  return res.end(); 
+
+  const { body } = req;
+  jwt.verify(body.access_token, config.authJwtSecretClient, async function(err, decoded) {  
+    console.log('decoded: ', decoded);
+
+    let options = {
+      method: 'POST',
+      body: JSON.stringify(decoded),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+  
+    await fetch(`${URL_APEX}cambioestado`, options)
+      .then(res => {
+        console.log('res: ',res);
+        return;
+      })
+      .catch(error => console.error('Error:', error));
+  });                         
+  
+  res.end(); 
 });
 
 /**

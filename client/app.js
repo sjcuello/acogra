@@ -24,8 +24,21 @@ let watcherRespuesta = chokidar.watch(`${URL_BASE}RESPUESTA`, options);
 
 const reportaEstado = async (file, state) => {
 
-  let data = { file: file,
-               state: state };
+  let vfile = path.parse(pathFile).name;
+/*
+  let content = {
+    file: vfile,
+    state: state,
+    content: fs.readFileSync(pathFile, 'utf8')
+  };
+*/
+  const token = jwt.sign({
+    sub: vfile.substr(3),
+    file: vfile,
+    state: state
+  }, config.authJwtSecretClient);
+  
+  let data = { access_token: token };
 
   let options = { method: 'POST', 
                   body: JSON.stringify(data), 
@@ -42,12 +55,23 @@ const reportaEstado = async (file, state) => {
 }
 
 const reportaRespuesta = async (pathFile, state) => {
-
-  let data = {
-    file: path.parse(pathFile).name,
+  
+  let vfile = path.parse(pathFile).name;
+/*
+  let content = {
+    file: vfile,
     state: state,
     content: fs.readFileSync(pathFile, 'utf8')
   };
+*/
+  const token = jwt.sign({
+    sub: vfile.substr(3),
+    file: vfile,
+    state: state,
+    content: fs.readFileSync(pathFile, 'utf8')
+  }, config.authJwtSecretClient);
+  
+  let data = { access_token: token };
 
   let options = {
     method: 'POST',
@@ -84,7 +108,6 @@ const retornaColumna = (key, val) => {
   const ancho = map[key][0]; // Ancho de columna 
   const relleno = map[key][1]; // Caracter de relleno 
   return String(val).padStart(ancho, relleno);
-
 }
 
 /**
