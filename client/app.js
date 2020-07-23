@@ -75,20 +75,21 @@ const reportaRespuesta = async (pathFile, state) => {
     .catch(error => console.error('Error:', error));
 }
 
-/* HashMap de espacios por columna
+/* 
+  * HashMap de espacios por columna
   * con el relleno correspondiente
 */
 const map = {
   'orden_de_trabajo': [11, '0'],
   'fecha': [8, '0'],
-  'producto': [10, ' '],
+  'producto': [11, ' '],
   'ph': [4, ' '],
   'conductividad': [8, ' '],
   'cantidad': [10, '0'],
   'planta': [10, ' '],
   'fecha_inicio': [12, '0'],
   'fecha_fin': [12, '0'],
-  'relleno': [13, ' ']
+  'relleno': [14, ' ']
 }
 
 const retornaColumna = (key, val) => {
