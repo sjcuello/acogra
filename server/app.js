@@ -7,7 +7,7 @@ const { config } = require('./config');
 const { decode } = require('punycode');
 const app = express();
 
-const URL = 'http://127.0.0.1:3500/';
+const URL = 'http://138.121.124.57:5500/';
 
 const URL_APEX = 'http://10.13.17.92:8080/ords/inth1100/produccion/';
 
@@ -124,8 +124,8 @@ app.post('/crearnuevaorden', async function (req, res) {
 
 (async function () {
   try {
-    app.listen(3600);
-    console.log("Conected and Listening");
+    app.listen(5500);
+    console.log("Conected and Listening (Server)");
   } catch (err) {
     console.error(err.message);
   }

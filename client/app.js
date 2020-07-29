@@ -7,8 +7,8 @@ const jwt = require('jsonwebtoken');
 const { config } = require('./config');
 const app = express();
 
-const URL_BASE = 'C:/Users/santi/Desktop/acogra/client/';
-const URL = 'http://127.0.0.1:3600/';
+const URL_BASE = '/home/bitnami/client-inthegra/archivos/';
+const URL = 'http://190.225.247.196:5500/';
 
 const options = {
   ignored: /^\./,
@@ -24,59 +24,59 @@ let watcherRespuesta = chokidar.watch(`${URL_BASE}RESPUESTA`, options);
 
 const reportaEstado = async (file, state) => {
 
-  const token = jwt.sign({
-    sub: file.substr(3),
-    file: file,
-    state: state
-  }, config.authJwtSecretClient);
+   const token = jwt.sign({
+     sub: file.substr(3),
+     file: file,
+     state: state
+   }, config.authJwtSecretClient);
 
-  let data = { access_token: token };
+   let data = { access_token: token };
 
-  let options = {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
+   let options = {
+     method: 'POST',
+     body: JSON.stringify(data),
+     headers: {
+       'Content-Type': 'application/json'
+     }
+   };
 
-  return await fetch(`${URL}cambioestado`, options)
-    .then(res => {
-      return;
-    })
-    .catch(error => console.error('Error:', error));
+   return await fetch(`${URL}cambioestado`, options)
+     .then(res => {
+       return;
+     })
+     .catch(error => console.error('Error:', error));
+
 }
 
 const reportaRespuesta = async (pathFile, state) => {
 
-  let vfile = path.parse(pathFile).name;
+   let vfile = path.parse(pathFile).name;
 
-  const token = jwt.sign({
-    sub: vfile.substr(3),
-    file: vfile,
-    state: state,
-    content: fs.readFileSync(pathFile, 'utf8')
-  }, config.authJwtSecretClient);
+   const token = jwt.sign({
+     sub: vfile.substr(3),
+     file: vfile,
+     state: state,
+     content: fs.readFileSync(pathFile, 'utf8')
+   }, config.authJwtSecretClient);
 
-  let data = { access_token: token };
+   let data = { access_token: token };
 
-  let options = {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
+   let options = {
+     method: 'POST',
+     body: JSON.stringify(data),
+     headers: {
+       'Content-Type': 'application/json'
+     }
+   };
 
-  return await fetch(`${URL}registrarespuesta`, options)
-    .then(res => {
-      return;
-    })
-    .catch(error => console.error('Error:', error));
+   return await fetch(`${URL}registrarespuesta`, options)
+     .then(res => {
+       return;
+     })
+     .catch(error => console.error('Error:', error));
 }
 
-/* 
-  * HashMap de espacios por columna
+/* HashMap de espacios por columna
   * con el relleno correspondiente
 */
 const map = {
@@ -93,9 +93,12 @@ const map = {
 }
 
 const retornaColumna = (key, val) => {
-  const ancho = map[key][0]; // Ancho de columna 
-  const relleno = map[key][1]; // Caracter de relleno 
-  return String(val).padStart(ancho, relleno);
+  if (map[key]){
+    const ancho = map[key][0]; // Ancho de columna 
+    const relleno = map[key][1]; // Caracter de relleno 
+    return String(val).padStart(ancho, relleno);
+  }
+  return;
 }
 
 /**
@@ -105,16 +108,23 @@ const retornaColumna = (key, val) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/test', function (req, res) {
+
+  const { body } = req;
+
+  return res.end();
+});
+
 app.post('/nuevaorden', function (req, res) {
 
   const { body } = req;
 
 
-  jwt.verify(body.access_token, config.authJwtSecretServer, function (err, decoded) {
+   jwt.verify(body.access_token, config.authJwtSecretServer, function (err, decoded) {
 
-    if (err){
-      return res.sendStatus(400);
-    }
+     if (err){
+       return res.sendStatus(400);
+     }
     
     const keys = Object.keys(decoded);
 
@@ -128,7 +138,7 @@ app.post('/nuevaorden', function (req, res) {
       if (err) throw err;
       console.log('Saved!');
     });
-  });
+   });
 
   return res.end();
 });
@@ -136,8 +146,8 @@ app.post('/nuevaorden', function (req, res) {
 
 (async function () {
   try {
-    app.listen(3500);
-    console.log("Conected and Listening");
+    app.listen(5500);
+    console.log("Conected and Listening (Client)");
 
     watcherPendiente.on('add', function (pathFile) { reportaEstado(path.parse(pathFile).name, 1) })
       .on('error', function (error) { console.error('Error happened', error); });
