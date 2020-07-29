@@ -19,7 +19,6 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.post('/cambioestado', function (req, res) {
-  console.log('req: ', req.body);
 
   const { body } = req;
   jwt.verify(body.access_token, config.authJwtSecretClient, async function (err, decoded) {
