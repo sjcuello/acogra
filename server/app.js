@@ -37,8 +37,8 @@ app.post('/cambioestado', function (req, res) {
     };
 
     await fetch(`${URL_APEX}cambioestado`, options)
-      .then(res => {
-        console.log('res cambioestado: ', res);
+      .then(resp => {
+        console.log(`${URL_APEX}cambioestado - status: ${resp.status}`);
         return;
       })
       .catch(error => console.error('Error:', error));
@@ -65,7 +65,8 @@ app.post('/registrarespuesta', async function (req, res) {
     };
 
     await fetch(`${URL_APEX}registrarespuesta`, options)
-      .then(res => {
+      .then(resp => {
+        console.log(`${URL_APEX}registrarespuesta - status: ${resp.status}`);
         return;
       })
       .catch(error => console.error('Error:', error));
@@ -112,7 +113,8 @@ app.post('/crearnuevaorden', async function (req, res) {
   };
 
   await fetch(`${URL}nuevaorden`, options)
-    .then(res => {
+    .then(resp => {
+      console.log(`${URL}nuevaorden - status: ${resp.status}`);
       return;
     })
     .catch(error => console.error('Error:', error));

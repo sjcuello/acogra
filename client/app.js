@@ -41,8 +41,9 @@ const reportaEstado = async (file, state) => {
    };
 
    return await fetch(`${URL}cambioestado`, options)
-     .then(res => {
-       return;
+     .then(resp => {
+        console.log(`${URL}cambioestado - status: ${resp.status}`);
+        return;
      })
      .catch(error => console.error('Error:', error));
 
@@ -70,8 +71,9 @@ const reportaRespuesta = async (pathFile, state) => {
    };
 
    return await fetch(`${URL}registrarespuesta`, options)
-     .then(res => {
-       return;
+     .then(resp => {
+        console.log(`${URL}cambioestado - status: ${resp.status}`);
+        return;
      })
      .catch(error => console.error('Error:', error));
 }
@@ -108,13 +110,6 @@ const retornaColumna = (key, val) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/test', function (req, res) {
-
-  const { body } = req;
-
-  return res.end();
-});
-
 app.post('/nuevaorden', function (req, res) {
 
   const { body } = req;
@@ -136,7 +131,7 @@ app.post('/nuevaorden', function (req, res) {
 
     fs.writeFile(`${URL_BASE}PENDIENTE/IOT${decoded.sub}.txt`, columna, function (err) {
       if (err) throw err;
-      console.log('Saved!');
+      console.log('File saved!');
     });
    });
 
